@@ -13,6 +13,34 @@ const config = {
     measurementId: "G-XKTB6SRDN8",
 };
 
+// lesson 92 - 94
+export const createUserProfileDocument = async (userAuth, additionalData) => {
+    if (!userAuth) return;
+
+    const userRef = firestore.doc(`users/${userAuth.uid}`);
+
+    // snapshot of signed in user
+    const snapShot = await userRef.get();
+
+    if (!snapShot.exists) {
+        const { displayName, email } = userAuth;
+        const createdAt = new Date();
+
+        try {
+            // create user in firestore database
+            await userRef.set({
+                displayName,
+                email,
+                createdAt,
+                ...additionalData,
+            });
+        } catch (error) {
+            console.log("ERROR CREATING USER ---", error.message);
+        }
+    }
+    return userRef;
+};
+
 firebase.initializeApp(config);
 
 export const auth = firebase.auth();

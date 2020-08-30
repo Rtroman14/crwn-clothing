@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
-import { auth } from "./firebase/firebase.utils";
+import { auth, createUserProfileDocument } from "./firebase/firebase.utils";
 
 import "./App.css";
 
@@ -21,10 +21,25 @@ class App extends React.Component {
     unsubscribeFromAuth = null;
 
     componentDidMount() {
-        this.unsubscribeFromAuth = auth.onAuthStateChanged((user) => {
-            this.setState({ currentUser: user });
+        // lesson 92 - 94
+        this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
+            if (userAuth) {
+                // userRef is returned from createUserProfileDocument in firebase.utils.js
+                // userRef contains data cooresponding to the logged in user
+                const userRef = await createUserProfileDocument(userAuth);
 
-            console.log(user);
+                userRef.onSnapshot((snapshot) => {
+                    this.setState({
+                        currentUser: {
+                            id: snapshot.id,
+                            ...snapshot.data(),
+                        },
+                    });
+                    console.log(this.state);
+                });
+            } else {
+                this.setState({ currentUser: userAuth });
+            }
         });
     }
 

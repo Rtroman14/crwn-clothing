@@ -36,5 +36,5 @@ const mapStateToProps = (state) => ({
     currentUser: state.user.currentUser,
 });
 
-// connect allows us to get properties from reducers
+// "connect" allows us to get properties from reducers
 export default connect(mapStateToProps)(Header);

@@ -5,7 +5,11 @@ import logger from "redux-logger";
 import rootReducer from "./root-reducer";
 
 // can push middlewares to array to scale in the future
-const middlewares = [logger];
+const middlewares = [];
+
+if (process.env.NODE_ENV === "development") {
+    middlewares.push(logger);
+}
 
 // applyMiddleware(...middlewares) is written as so to allow scalability
 export const store = createStore(rootReducer, applyMiddleware(...middlewares));

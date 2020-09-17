@@ -13,6 +13,8 @@ const config = {
     measurementId: "G-XKTB6SRDN8",
 };
 
+firebase.initializeApp(config);
+
 // lesson 92 - 94
 export const createUserProfileDocument = async (userAuth, additionalData) => {
     if (!userAuth) return;
@@ -41,7 +43,39 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
     return userRef;
 };
 
-firebase.initializeApp(config);
+export const addCollectionAndDocument = async (collectionKey, objectsToAdd) => {
+    const collectionRef = firestore.collection(collectionKey);
+
+    // Batching so all values get uploaded at once. Prevents uploading part of an array if failure
+    const batch = firestore.batch();
+    objectsToAdd.forEach((obj) => {
+        const newDocRef = collectionRef.doc();
+        batch.set(newDocRef, obj);
+    });
+
+    return await batch.commit();
+};
+
+export const convertCollectionsSnapshotToMap = (collectionsSnapshot) => {
+    const transformedCollection = collectionsSnapshot.docs.map((docSnapshot) => {
+        const { title, items } = docSnapshot.data();
+
+        return {
+            // "encodeURI" transforms string into URL
+            routeName: encodeURI(title.toLowerCase()),
+            id: docSnapshot.id,
+            title,
+            items,
+        };
+    });
+
+    // Current collection is an array. This converts it into an
+    // object where each object's key is the title. Same as shop.data.js
+    return transformedCollection.reduce((previousValue, collection) => {
+        previousValue[collection.title.toLowerCase()] = collection;
+        return previousValue;
+    }, {});
+};
 
 export const auth = firebase.auth();
 export const firestore = firebase.firestore();

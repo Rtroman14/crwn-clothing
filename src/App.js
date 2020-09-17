@@ -12,6 +12,7 @@ import SignInAndSignOutPage from "./pages/sign-in-and-sign-out/sign-in-and-sign-
 import CheckoutPage from "./pages/checkout/checkout.component";
 
 import { auth, createUserProfileDocument } from "./firebase/firebase.utils";
+
 import { setCurrentUser } from "./redux/user/user.actions";
 import { selectCurrentUser } from "./redux/user/user.selectors";
 
@@ -37,6 +38,12 @@ class App extends React.Component {
                 });
             } else {
                 setCurrentUser(userAuth);
+                // Code was temporarily there to programatically add shop.data.js to firestore
+                // addCollectionAndDocument(
+                //     "collections",
+                //     // only want "title" and "items" from shop.data.js to go in firestore
+                //     collectionsArray.map(({ title, items }) => ({ title, items }))
+                // );
             }
         });
     }
@@ -70,6 +77,8 @@ class App extends React.Component {
 // destructure "user" from "state"
 const mapStateToProps = createStructuredSelector({
     currentUser: selectCurrentUser,
+    // Code was temporarily there to programatically add shop.data.js to firestore
+    // collectionsArray: selectCollectionsForPreview,
 });
 
 const mapDispatchToProps = (dispatch) => ({
